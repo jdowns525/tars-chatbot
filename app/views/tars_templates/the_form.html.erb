@@ -1,0 +1,6 @@
+<h1>TARS Chatbot</h1>
+<%= form_tag("/tars/results", method: "get") do %>
+  <label for="input">Your message:</label>
+  <input type="text" id="input" name="input">
+  <input type="submit" value="Send">
+<% end %>

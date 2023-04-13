@@ -1,0 +1,14 @@
+<h1>TARS Chatbot</h1>
+<div id="conversation">
+  <p><strong>You:</strong> <%= @user_input %></p>
+  <p><strong>TARS:</strong> <%= @result %></p>
+</div>
+
+<%= form_tag("/tars/results", method: "get") do %>
+  <label for="input">Your message:</label>
+  <input type="text" id="input" name="input">
+  <input type="hidden" id="conversation_history" name="conversation_history" value="<%= "#{params.fetch('conversation_history', '')}You: #{@user_input}\nTARS: #{@result}\n" %>">
+  <input type="submit" value="Send">
+<% end %>
+
+<%= link_to "Start Over", "/" %>
