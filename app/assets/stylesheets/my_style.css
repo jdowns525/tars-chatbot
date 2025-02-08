@@ -1,0 +1,84 @@
+/* COBOL terminal theme */
+body {
+  background-color: black;
+  color: green;
+  font-family: "Courier New", Courier, monospace;
+  padding: 20px;
+}
+
+/* Title bar */
+.title-bar {
+  background-color: darkgreen;
+  color: black;
+  font-weight: bold;
+  padding: 5px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.title-text {
+  text-transform: uppercase;
+}
+
+.command-bar {
+  padding: 5px;
+  border-bottom: 2px solid green;
+  font-weight: bold;
+}
+
+.blinking-cursor {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+/* Chat terminal */
+.terminal-content {
+  background-color: black;
+  border: 2px solid green;
+  padding: 10px;
+  height: 300px;
+  overflow-y: auto;
+  white-space: pre-line;
+  font-size: 1.2em;
+}
+
+/* Line numbers */
+.line-number {
+  color: yellow;
+  padding-right: 10px;
+}
+
+.keyword {
+  color: cyan;
+  font-weight: bold;
+}
+
+.comment {
+  color: green;
+}
+
+/* Input field */
+.input-area {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.prompt {
+  color: yellow;
+  font-weight: bold;
+  padding-right: 5px;
+}
+
+input[type="text"] {
+  background-color: black;
+  color: green;
+  border: none;
+  font-size: 1.2em;
+  font-family: "Courier New", Courier, monospace;
+  width: 80%;
+  padding: 5px;
+}

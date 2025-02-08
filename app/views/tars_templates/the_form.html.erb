@@ -1,6 +1,167 @@
-<h1>TARS Chatbot</h1>
-<%= form_tag("/tars/results", method: "get") do %>
-  <label for="input">Your message:</label>
-  <input type="text" id="input" name="input">
-  <input type="submit" value="Send">
-<% end %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TARS AI Terminal</title>
+  <link rel="stylesheet" href="/assets/my_style.css">
+  
+  <style>
+    /* COBOL terminal theme */
+    body {
+      background-color: black;
+      color: green;
+      font-family: "Courier New", Courier, monospace;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    /* Title bar */
+    .title-bar {
+      background-color: darkgreen;
+      color: black;
+      font-weight: bold;
+      padding: 5px;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 800px;
+      font-size: 0.8em;
+    }
+
+     /* Chat Terminal (Fixed-size, No Scroll) */
+    .terminal-content {
+      background-color: black;
+      border: 2px solid green;
+      padding: 8px;
+      height: 300px; /* Slightly taller */
+      width: 100%;
+      max-width: 800px;
+      white-space: pre-wrap;
+      font-size: 0.9em;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end; /* Keeps newest messages at the bottom */
+    }
+
+    /* Blinking Cursor */
+    .blinking-cursor {
+      display: inline-block;
+      width: 8px;
+      height: 1.2em;
+      background-color: green;
+      margin-left: 5px;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    /* Input Field */
+    .input-area {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 2px solid green;
+      padding: 8px;
+      width: 100%;
+      max-width: 800px;
+      margin-top: 8px;
+      font-size: 0.9em; /* Smaller font size */
+    }
+
+    .prompt {
+      color: yellow;
+      font-weight: bold;
+      font-size: 1em; /* Reduced size */
+      white-space: nowrap;
+    }
+
+    input[type="text"] {
+      background-color: black;
+      color: green;
+      border: none;
+      font-size: 1em; /* Smaller font */
+      font-family: "Courier New", Courier, monospace;
+      width: 100%;
+      padding: 4px;
+      outline: none;
+      caret-color: transparent;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="title-bar">
+    <span class="title-text">REVEDIT SYS2.TARS_CHATBOT</span>
+    <span class="title-right">COLUMNS 00001 00072</span>
+  </div>
+
+  <div class="terminal-content" id="conversation">
+    <pre>
+<span class="line-number">000001</span> <span class="keyword">SYSTEM ONLINE</span>
+    </pre>
+  </div>
+
+  <div class="input-area">
+    <span class="prompt">COMMAND ==></span> <span class="blinking-cursor">_</span>
+    <input type="text" id="input" autofocus autocomplete="off">
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const inputField = document.getElementById("input");
+      const chatLog = document.getElementById("conversation");
+      const maxLines = 10; // Maximum number of lines to show before overwriting
+
+      async function fetchTarsResponse(userText) {
+        const response = await fetch("/tars/results?input=" + encodeURIComponent(userText), {
+          method: "GET"
+        });
+
+        const data = await response.text();
+        const parser = new DOMParser();
+        const htmlDoc = parser.parseFromString(data, "text/html");
+        const botReply = htmlDoc.querySelector("#tars-response").textContent.trim();
+
+        return botReply;
+      }
+
+      inputField.addEventListener("keypress", async function (event) {
+        if (event.key === "Enter") {
+          const userText = inputField.value.trim().toUpperCase();
+          if (userText === "") return;
+
+          // Get current messages
+          let messages = chatLog.innerHTML.split("\n");
+          if (messages.length >= maxLines) {
+            messages = messages.slice(-maxLines + 2); // Keep only recent lines
+          }
+
+          // Append new messages
+          messages.push(`<span class="line-number">USER:</span> <span class="comment"></span> ${userText}`);
+          const botResponse = await fetchTarsResponse(userText);
+          messages.push(`<span class="line-number">TARS:</span> <span class="green"></span> ${botResponse}`);
+
+          // Update the chatbox content
+          chatLog.innerHTML = messages.join("\n");
+
+          chatLog.scrollTop = chatLog.scrollHeight;
+          inputField.value = "";
+
+          if (userText === "EXIT") {
+            setTimeout(() => { window.location.href = "/"; }, 1000);
+          }
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
